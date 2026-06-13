@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Библиотека</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ff: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --fm: 'IBM Plex Mono', 'Courier New', monospace;
+
+  --ink:  #1a1a1a;
+  --ink2: #5a5a5a;
+  --ink3: #999;
+  --bg:   #ffffff;
+  --bg2:  #f5f5f4;
+  --bg3:  #eeece8;
+  --border:  #e5e3de;
+  --border2: #d0cdc7;
+
+  --accent:     #1a6ef5;
+  --accent-hover:#1558cc;
+  --accent-bg:  #e8f0fe;
+  --accent-ink: #1043a8;
+
+  --ok-bg:     #f0faf4;
+  --ok-ink:    #166534;
+  --ok-border: #bbf7d0;
+
+  --err-bg:     #fef0f0;
+  --err-ink:    #b91c1c;
+  --err-border: #fecaca;
+
+  --warn-bg:  #fffbeb;
+  --warn-ink: #92400e;
+
+  --radius-sm: 5px;
+  --radius:    7px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+}
+
+html, body { height: 100%; }
+body {
+  font-family: var(--ff);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--bg3);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LAYOUT ── */
+.shell { display: grid; grid-template-rows: 48px 1fr; height: 100vh; }
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.topbar-logo {
+  font-size: 14px; font-weight: 500;
+  display: flex; align-items: center; gap: 7px;
+  color: var(--ink);
+}
+.topbar-logo i { color: var(--accent); font-size: 18px; }
+.topbar-url {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 6px;
+}
+.topbar-url span { font-size: 11px; color: var(--ink3); font-family: var(--fm); }
+.topbar-url input {
+  font-family: var(--fm); font-size: 11px;
+  color: var(--ink2); background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 4px 8px;
+  width: 240px; outline: none;
+  transition: border-color .15s;
+}
+.topbar-url input:focus { border-color: var(--accent); color: var(--ink); }
+
+.body { display: grid; grid-template-columns: 184px 1fr; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  padding: 16px 0;
+  overflow-y: auto;
+}
+.nav-section {
+  font-size: 10px; font-weight: 500;
+  color: var(--ink3); letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 0 16px 8px;
+}
+.nav-section + .nav-section { margin-top: 16px; }
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 16px; cursor: pointer;
+  font-size: 13px; color: var(--ink2);
+  transition: background .1s, color .1s;
+  position: relative; user-select: none;
+}
+.nav-item:hover { background: var(--bg2); color: var(--ink); }
+.nav-item.active { color: var(--accent); background: var(--accent-bg); }
+.nav-item.active::before {
+  content: ''; position: absolute;
+  left: 0; top: 4px; bottom: 4px;
+  width: 2px; background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+.nav-item i { font-size: 16px; flex-shrink: 0; }
+
+/* ── MAIN ── */
+.main {
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--bg3);
+}
+.page { display: none; }
+.page.active { display: block; }
+
+.page-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.page-title { font-size: 16px; font-weight: 500; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 14px;
+  border: 1px solid var(--border2); border-radius: var(--radius);
+  background: var(--bg); color: var(--ink);
+  font-size: 12px; font-family: var(--ff);
+  cursor: pointer; white-space: nowrap;
+  transition: background .1s, border-color .1s;
+  line-height: 1.4;
+}
+.btn:hover { background: var(--bg2); }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+.btn-primary {
+  background: var(--accent); color: #fff;
+  border-color: var(--accent);
+}
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-ghost:hover { background: var(--bg2); border-color: var(--border); }
+.btn-danger { color: var(--err-ink); border-color: transparent; background: transparent; }
+.btn-danger:hover { background: var(--err-bg); border-color: var(--err-bg); }
+.btn-sm { padding: 4px 9px; font-size: 11px; border-radius: var(--radius-sm); }
+
+/* ── TABLE ── */
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+thead { background: var(--bg2); }
+th {
+  font-size: 11px; font-weight: 500;
+  color: var(--ink3); text-align: left;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px; vertical-align: middle;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--bg2); }
+.td-id  { color: var(--ink3); font-family: var(--fm); font-size: 11px; }
+.td-sub { color: var(--ink2); }
+.td-mono { font-family: var(--fm); font-size: 11px; color: var(--ink2); }
+
+/* ── PILLS ── */
+.pill {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 500;
+  padding: 2px 8px; border-radius: 999px; line-height: 1.4;
+}
+.pill-green { background: var(--ok-bg);   color: var(--ok-ink); }
+.pill-red   { background: var(--err-bg);  color: var(--err-ink); }
+.pill-blue  { background: var(--accent-bg); color: var(--accent-ink); }
+.pill-gray  { background: var(--bg2); color: var(--ink2); border: 1px solid var(--border); }
+
+.actions-cell { display: flex; gap: 4px; justify-content: flex-end; }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  display: flex; gap: 8px;
+  margin-bottom: 14px;
+  align-items: center; flex-wrap: wrap;
+}
+.filter-bar select {
+  font-family: var(--ff); font-size: 12px;
+  color: var(--ink); background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 5px 10px;
+  outline: none; cursor: pointer;
+  transition: border-color .15s;
+}
+.filter-bar select:focus { border-color: var(--accent); }
+
+/* ── EMPTY / ERROR ── */
+.empty-state {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 48px 20px; text-align: center; color: var(--ink3);
+}
+.empty-state i { font-size: 30px; display: block; margin-bottom: 10px; opacity: .35; }
+.empty-state p { font-size: 12px; }
+
+/* ── MODAL ── */
+.modal-wrap {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, .28);
+}
+.modal-wrap.open { display: flex; }
+.modal {
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-xl);
+  padding: 24px; width: 420px;
+  max-width: 94vw; max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(0,0,0,.12);
+}
+.modal-title { font-size: 14px; font-weight: 500; margin-bottom: 20px; }
+
+.field { margin-bottom: 14px; }
+.field label {
+  display: block; font-size: 11px; font-weight: 500;
+  color: var(--ink3); margin-bottom: 5px;
+}
+.field input, .field select, .field textarea {
+  width: 100%; font-family: var(--ff); font-size: 13px;
+  color: var(--ink); background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 7px 10px; outline: none;
+  transition: border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(26,110,245,.08);
+}
+.field textarea { resize: vertical; min-height: 68px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-footer {
+  display: flex; gap: 8px; justify-content: flex-end;
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── TOAST ── */
+.toast-host {
+  position: fixed; bottom: 20px; right: 20px; z-index: 200;
+  display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 500;
+  border: 1px solid; pointer-events: none;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity .18s, transform .18s;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast-ok  { background: var(--ok-bg);  color: var(--ok-ink);  border-color: var(--ok-border); }
+.toast-err { background: var(--err-bg); color: var(--err-ink); border-color: var(--err-border); }
+
+.book-file-info {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--ink3);
+}
+
+.modal-fb2 {
+  width: min(980px, 96vw);
+}
+
+.fb2-meta {
+  margin-bottom: 14px;
+  font-size: 11px;
+  color: var(--ink3);
+}
+
+.fb2-content {
+  max-height: 68vh;
+  overflow-y: auto;
+  padding: 18px 18px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #fff, #fcfcfb);
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.8;
+  font-size: 15px;
+  color: var(--ink);
+}
+.fb2-content h1, .fb2-content h2, .fb2-content h3, .fb2-content h4 {
+  font-family: var(--ff);
+  line-height: 1.25;
+  margin: 1.1em 0 0.45em;
+}
+.fb2-content p { margin: 0 0 0.8em; }
+.fb2-content .fb2-title { font-weight: 600; text-align: center; }
+.fb2-content .fb2-subtitle { font-style: italic; text-align: center; }
+.fb2-content .fb2-section { margin-bottom: 1.25em; }
+.fb2-content .fb2-epigraph { margin: 1em 0; padding-left: 1em; border-left: 2px solid var(--border2); color: var(--ink2); }
+.fb2-content .fb2-author { text-align: right; font-style: italic; }
+.fb2-content .fb2-empty { height: 0.9em; }
+.fb2-content .fb2-note { color: var(--ink3); font-size: 0.95em; }
+.fb2-content a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <header class="topbar">
+    <div class="topbar-logo">
+      <i class="ti ti-books" aria-hidden="true"></i>
+      библиотека
+    </div>
+    <div class="topbar-url">
+      <span>api:</span>
+      <input type="text" id="baseUrl" value="http://localhost:8080/api" spellcheck="false">
+    </div>
+  </header>
+
+  <div class="body">
+    <nav class="sidebar">
+      <div class="nav-section">Каталог</div>
+      <div class="nav-item active" id="nav-authors" onclick="goto('authors')">
+        <i class="ti ti-user" aria-hidden="true"></i> Авторы
+      </div>
+      <div class="nav-item" id="nav-books" onclick="goto('books')">
+        <i class="ti ti-book" aria-hidden="true"></i> Книги
+      </div>
+      <div class="nav-section">Читатели</div>
+      <div class="nav-item" id="nav-readers" onclick="goto('readers')">
+        <i class="ti ti-users" aria-hidden="true"></i> Читатели
+      </div>
+      <div class="nav-item" id="nav-loans" onclick="goto('loans')">
+        <i class="ti ti-arrows-exchange" aria-hidden="true"></i> Владения
+      </div>
+      <div class="nav-item" id="nav-progress" onclick="goto('progress')">
+        <i class="ti ti-bookmark" aria-hidden="true"></i> Закладки
+      </div>
+    </nav>
+
+    <main class="main">
+
+      <!-- AUTHORS -->
+      <div class="page active" id="page-authors">
+        <div class="page-header">
+          <span class="page-title">Авторы</span>
+          <button class="btn btn-primary" onclick="newAuthor()">
+            <i class="ti ti-plus" aria-hidden="true"></i> Добавить
+          </button>
+        </div>
+        <div id="authors-out"></div>
+      </div>
+
+      <!-- BOOKS -->
+      <div class="page" id="page-books">
+        <div class="page-header">
+          <span class="page-title">Книги</span>
+          <button class="btn btn-primary" onclick="newBook()">
+            <i class="ti ti-plus" aria-hidden="true"></i> Добавить
+          </button>
+        </div>
+        <div class="filter-bar">
+          <select id="f-author" onchange="loadBooks()"><option value="">Все авторы</option></select>
+        </div>
+        <div id="books-out"></div>
+      </div>
+
+      <!-- READERS -->
+      <div class="page" id="page-readers">
+        <div class="page-header">
+          <span class="page-title">Читатели</span>
+          <button class="btn btn-primary" onclick="newReader()">
+            <i class="ti ti-plus" aria-hidden="true"></i> Зарегистрировать
+          </button>
+        </div>
+        <div id="readers-out"></div>
+      </div>
+
+      <!-- LOANS -->
+      <div class="page" id="page-loans">
+        <div class="page-header">
+          <span class="page-title">Владения</span>
+          <button class="btn btn-primary" onclick="openM('m-loan')">
+            <i class="ti ti-plus" aria-hidden="true"></i> Оформить владение
+          </button>
+        </div>
+        <div class="filter-bar">
+          <select id="f-reader-loan" onchange="loadLoans()"><option value="">Все читатели</option></select>
+        </div>
+        <div id="loans-out"></div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="page" id="page-progress">
+        <div class="page-header">
+          <span class="page-title">Закладки</span>
+          <button class="btn btn-primary" onclick="openM('m-prog')">
+            <i class="ti ti-plus" aria-hidden="true"></i> Добавить
+          </button>
+        </div>
+        <div class="filter-bar">
+          <select id="f-reader-prog" onchange="loadProgress()">
+            <option value="">Выберите читателя</option>
+          </select>
+        </div>
+        <div id="progress-out"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-wrap" id="m-author">
+  <div class="modal">
+    <div class="modal-title" id="m-author-title">Новый автор</div>
+    <input type="hidden" id="a-id">
+    <div class="field"><label>Имя</label><input type="text" id="a-fn" placeholder="Иван"></div>
+    <div class="field"><label>Фамилия</label><input type="text" id="a-ln" placeholder="Тургенев"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeM('m-author')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveAuthor()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="m-book">
+  <div class="modal">
+    <div class="modal-title" id="m-book-title">Новая книга</div>
+    <input type="hidden" id="b-id">
+    <div class="field"><label>Название</label><input type="text" id="b-title" placeholder="Отцы и дети"></div>
+    <div class="field"><label>Автор</label><select id="b-author"></select></div>
+    <div class="field"><label>Описание</label><textarea id="b-desc" placeholder="Краткое описание..."></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Год</label><input type="number" id="b-year" placeholder="1862"></div>
+      <div class="field"><label>Страниц</label><input type="number" id="b-pages" placeholder="400"></div>
+    </div>
+    <div class="field">
+      <label>FB2-файл</label>
+      <input type="file" id="b-fb2-file" accept=".fb2,.xml,application/xml,text/xml">
+      <div class="book-file-info" id="b-fb2-info">Файл не выбран</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeM('m-book')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveBook()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="m-reader">
+  <div class="modal">
+    <div class="modal-title" id="m-reader-title">Новый читатель</div>
+    <input type="hidden" id="r-id">
+    <div class="field-row">
+      <div class="field"><label>Имя</label><input type="text" id="r-fn" placeholder="Алексей"></div>
+      <div class="field"><label>Фамилия</label><input type="text" id="r-ln" placeholder="Петров"></div>
+    </div>
+    <div class="field"><label>Email</label><input type="email" id="r-email" placeholder="reader@example.com"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeM('m-reader')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveReader()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="m-loan">
+  <div class="modal">
+    <div class="modal-title">Оформить владение</div>
+    <div class="field"><label>Книга</label><select id="l-book"></select></div>
+    <div class="field"><label>Читатель</label><select id="l-reader"></select></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeM('m-loan')">Отмена</button>
+      <button class="btn btn-primary" onclick="createLoan()">Оформить</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="m-prog">
+  <div class="modal">
+    <div class="modal-title">Сохранить закладку</div>
+    <div class="field"><label>Читатель</label><select id="p-reader"></select></div>
+    <div class="field"><label>Книга</label><select id="p-book"></select></div>
+    <div class="field"><label>Текущая страница</label><input type="number" id="p-page" min="0" placeholder="0"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeM('m-prog')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveProgress()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="m-fb2-reader">
+  <div class="modal modal-fb2">
+    <div class="modal-title" id="fb2-reader-title">Читалка FB2</div>
+    <div class="fb2-meta" id="fb2-reader-meta"></div>
+    <div class="fb2-content" id="fb2-reader-content"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeFb2Reader()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-host"><div class="toast" id="toast"></div></div>
+
+<script>
+const BASE = () => document.getElementById('baseUrl').value.replace(/\/$/, '');
+const $ = id => document.getElementById(id);
+const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const fmtDate = d => d ? new Date(d).toLocaleDateString('ru-RU') : '—';
+let pendingFb2Content = null;
+let pendingFb2Name = '';
+
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(BASE() + path, opts);
+    const txt = await r.text();
+    const data = txt ? JSON.parse(txt) : null;
+    if (!r.ok) throw new Error(data?.message || `HTTP ${r.status}`);
+    return data;
+  } catch(e) {
+    toast(e.message, 'err');
+    throw e;
+  }
+}
+
+let _tt;
+function toast(msg, type = 'ok') {
+  const t = $('toast');
+  t.className = 'toast toast-' + (type === 'err' ? 'err' : 'ok');
+  t.innerHTML = `<i class="ti ti-${type === 'err' ? 'alert-circle' : 'check'}" aria-hidden="true"></i>${esc(msg)}`;
+  t.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function openM(id) { $(id).classList.add('open'); }
+function closeM(id) { $(id).classList.remove('open'); }
+document.querySelectorAll('.modal-wrap').forEach(o =>
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); })
+);
+
+function resetBookFileState(info = 'Файл не выбран') {
+  pendingFb2Content = null;
+  pendingFb2Name = '';
+  const input = $('b-fb2-file');
+  if (input) input.value = '';
+  const label = $('b-fb2-info');
+  if (label) label.textContent = info;
+}
+
+async function handleBookFileInput(ev) {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) {
+    pendingFb2Content = null;
+    pendingFb2Name = '';
+    $('b-fb2-info').textContent = 'Файл не выбран';
+    return;
+  }
+  pendingFb2Name = file.name;
+  pendingFb2Content = await file.text();
+  $('b-fb2-info').textContent = `Выбран файл: ${file.name}`;
+}
+
+document.addEventListener('change', ev => {
+  if (ev.target && ev.target.id === 'b-fb2-file') {
+    handleBookFileInput(ev).catch(err => toast(err.message, 'err'));
+  }
+});
+
+function goto(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  $('page-' + p).classList.add('active');
+  $('nav-' + p).classList.add('active');
+  ({ authors: loadAuthors, books: () => { populateAuthorSelects(); loadBooks(); },
+     readers: loadReaders, loans: () => { populateLoanSelects(); loadLoans(); },
+     progress: () => { populateProgressSelects(); loadProgress(); } })[p]?.();
+}
+
+const empty = (icon, msg) =>
+  `<div class="empty-state"><i class="ti ${icon}" aria-hidden="true"></i><p>${msg}</p></div>`;
+const errHTML = () => empty('ti-wifi-off', 'Не удалось подключиться к серверу');
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function fb2TextFromNode(node) {
+  return (node?.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+function fb2NodeToHtml(node) {
+  if (!node) return '';
+  const tag = (node.localName || '').toLowerCase();
+  const children = Array.from(node.children || []);
+  if (tag === 'p') return `<p>${escapeHtml(node.textContent || '')}</p>`;
+  if (tag === 'title') return `<div class="fb2-title">${children.map(ch => fb2NodeToHtml(ch)).join('')}</div>`;
+  if (tag === 'subtitle') return `<p class="fb2-subtitle">${escapeHtml(node.textContent || '')}</p>`;
+  if (tag === 'section') return `<div class="fb2-section">${children.map(ch => fb2NodeToHtml(ch)).join('')}</div>`;
+  if (tag === 'epigraph') return `<div class="fb2-epigraph">${children.map(ch => fb2NodeToHtml(ch)).join('')}</div>`;
+  if (tag === 'empty-line') return '<div class="fb2-empty"></div>';
+  if (tag === 'text-author') return `<p class="fb2-author">${escapeHtml(node.textContent || '')}</p>`;
+  if (['poem','stanza','cite','body','v'].includes(tag)) {
+    const rendered = children.map(ch => fb2NodeToHtml(ch)).join('');
+    return rendered || (node.textContent ? `<p>${escapeHtml(node.textContent)}</p>` : '');
+  }
+  if (children.length) return children.map(ch => fb2NodeToHtml(ch)).join('');
+  if (node.textContent && node.textContent.trim()) return `<p>${escapeHtml(node.textContent)}</p>`;
+  return '';
+}
+
+function findFirstByLocalName(root, name) {
+  return Array.from(root.getElementsByTagName('*')).find(el => (el.localName || '').toLowerCase() === name.toLowerCase()) || null;
+}
+
+function findAllByLocalName(root, name) {
+  return Array.from(root.getElementsByTagName('*')).filter(el => (el.localName || '').toLowerCase() === name.toLowerCase());
+}
+
+function renderFb2Document(xmlText) {
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlText, 'text/xml');
+  if (xml.querySelector('parsererror')) {
+    throw new Error('Не удалось разобрать FB2-файл');
+  }
+  const bookTitle = fb2TextFromNode(findFirstByLocalName(xml, 'book-title')) || 'Без названия';
+  const authors = findAllByLocalName(xml, 'author').map(a => {
+    const first = fb2TextFromNode(findFirstByLocalName(a, 'first-name'));
+    const last = fb2TextFromNode(findFirstByLocalName(a, 'last-name'));
+    const middle = fb2TextFromNode(findFirstByLocalName(a, 'middle-name'));
+    return [last, first, middle].filter(Boolean).join(' ');
+  }).filter(Boolean);
+  const body = findFirstByLocalName(xml, 'body') || xml.documentElement;
+  const content = fb2NodeToHtml(body).trim() || '<p class="fb2-note">FB2-файл не содержит текста для отображения.</p>';
+  return { bookTitle, authors, content };
+}
+
+async function openFb2Reader(bookId, bookTitle, hasFb2) {
+  if (!hasFb2) {
+    toast('FB2-файл не подгружен', 'err');
+    return;
+  }
+  openM('m-fb2-reader');
+  $('fb2-reader-title').textContent = bookTitle || 'Читалка FB2';
+  $('fb2-reader-meta').textContent = 'Загрузка...';
+  $('fb2-reader-content').innerHTML = '<p class="fb2-note">Открываем FB2-файл…</p>';
+  try {
+    const data = await api('GET', `/books/${bookId}/fb2`);
+    const rendered = renderFb2Document(data.fb2Content);
+    $('fb2-reader-title').textContent = rendered.bookTitle || bookTitle || 'Читалка FB2';
+    $('fb2-reader-meta').textContent = rendered.authors.length
+      ? `Авторы: ${rendered.authors.join(', ')}`
+      : 'Автор не указан';
+    $('fb2-reader-content').innerHTML = rendered.content;
+  } catch (e) {
+    $('fb2-reader-meta').textContent = '';
+    $('fb2-reader-content').innerHTML = `<p class="fb2-note">${escapeHtml(e.message)}</p>`;
+  }
+}
+
+function closeFb2Reader() {
+  closeM('m-fb2-reader');
+}
+
+/* ── AUTHORS ── */
+async function loadAuthors() {
+  const d = await api('GET', '/authors').catch(() => null);
+  const out = $('authors-out');
+  if (!d) { out.innerHTML = errHTML(); return; }
+  if (!d.length) { out.innerHTML = empty('ti-user', 'Авторов пока нет'); return; }
+  out.innerHTML = `<div class="card"><div class="table-wrap"><table>
+    <thead><tr>
+      <th style="width:56px">#</th>
+      <th>Имя</th><th>Фамилия</th>
+      <th style="width:80px"></th>
+    </tr></thead>
+    <tbody>${d.map(a => `<tr>
+      <td class="td-id">${a.id}</td>
+      <td>${esc(a.firstName)}</td>
+      <td>${esc(a.lastName)}</td>
+      <td><div class="actions-cell">
+        <button class="btn btn-sm btn-ghost" aria-label="Редактировать" onclick='editAuthor(${JSON.stringify(a)})'>
+          <i class="ti ti-edit" aria-hidden="true"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" aria-label="Удалить" onclick="delAuthor(${a.id})">
+          <i class="ti ti-trash" aria-hidden="true"></i>
+        </button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;
+}
+function newAuthor() {
+  $('m-author-title').textContent = 'Новый автор';
+  $('a-id').value = ''; $('a-fn').value = ''; $('a-ln').value = '';
+  openM('m-author');
+}
+function editAuthor(a) {
+  $('m-author-title').textContent = 'Редактировать автора';
+  $('a-id').value = a.id; $('a-fn').value = a.firstName; $('a-ln').value = a.lastName;
+  openM('m-author');
+}
+async function saveAuthor() {
+  const id = $('a-id').value;
+  const body = { firstName: $('a-fn').value, lastName: $('a-ln').value };
+  await api(id ? 'PUT' : 'POST', id ? `/authors/${id}` : '/authors', body).catch(() => null);
+  closeM('m-author'); loadAuthors();
+  toast(id ? 'Автор обновлён' : 'Автор добавлен');
+}
+async function delAuthor(id) {
+  if (!confirm('Удалить автора?')) return;
+  await api('DELETE', `/authors/${id}`).catch(() => null);
+  loadAuthors(); toast('Автор удалён');
+}
+
+/* ── BOOKS ── */
+async function populateAuthorSelects() {
+  const d = await api('GET', '/authors').catch(() => []);
+  const rows = (d || []).map(a => `<option value="${a.id}">${esc(a.lastName)} ${esc(a.firstName)}</option>`).join('');
+  $('f-author').innerHTML = '<option value="">Все авторы</option>' + rows;
+  $('b-author').innerHTML = '<option value="">Выберите автора</option>' + rows;
+}
+async function loadBooks() {
+  let path = '/books?';
+  const au = $('f-author').value;
+  if (au) path += `authorId=${au}&`;
+  const d = await api('GET', path).catch(() => null);
+  const out = $('books-out');
+  if (!d) { out.innerHTML = errHTML(); return; }
+  if (!d.length) { out.innerHTML = empty('ti-book', 'Книги не найдены'); return; }
+  out.innerHTML = `<div class="card"><div class="table-wrap"><table>
+    <thead><tr>
+      <th style="width:56px">#</th>
+      <th>Название</th><th>Автор</th>
+      <th style="width:58px">Год</th>
+      <th style="width:60px">Стр.</th>
+      <th style="width:90px">Владельцы</th>
+      <th style="width:88px">Читать</th>
+      <th style="width:72px"></th>
+    </tr></thead>
+    <tbody>${d.map(b => `<tr>
+      <td class="td-id">${b.id}</td>
+      <td>${esc(b.title)}</td>
+      <td class="td-sub">${b.authorName ? b.authorName : '—'}</td>
+      <td class="td-id">${b.year || '—'}</td>
+      <td class="td-id">${b.pageCount || '—'}</td>
+      <td>${typeof b.ownersCount === 'number' ? `<span class="pill pill-gray">${b.ownersCount}</span>` : '<span class="pill pill-gray">0</span>'}</td>
+      <td>
+        <button class="btn btn-sm ${b.hasFb2 ? 'btn-primary' : 'btn-ghost'}" ${b.hasFb2 ? '' : 'disabled'}
+          title="${b.hasFb2 ? 'Открыть FB2-читалку' : 'FB2-файл не загружен'}"
+          aria-label="Читать" onclick='openFb2Reader(${b.id}, ${JSON.stringify(b.title)}, ${b.hasFb2 ? 'true' : 'false'})''>
+          <i class="ti ti-player-play" aria-hidden="true"></i> читать
+        </button>
+      </td>
+      <td><div class="actions-cell">
+        <button class="btn btn-sm btn-ghost" aria-label="Редактировать" onclick='editBook(${JSON.stringify(b)})'>
+          <i class="ti ti-edit" aria-hidden="true"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" aria-label="Удалить" onclick="delBook(${b.id})">
+          <i class="ti ti-trash" aria-hidden="true"></i>
+        </button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;
+}
+function newBook() {
+  $('m-book-title').textContent = 'Новая книга';
+  ['b-id','b-title','b-desc','b-year','b-pages'].forEach(id => $(id).value = '');
+  populateAuthorSelects();
+  resetBookFileState('Загрузите FB2-файл, если он есть');
+  openM('m-book');
+}
+function editBook(b) {
+  $('m-book-title').textContent = 'Редактировать книгу';
+  $('b-id').value = b.id; $('b-title').value = b.title || '';
+  $('b-desc').value = b.description || '';
+  $('b-year').value = b.year || ''; $('b-pages').value = b.pageCount || '';
+  populateAuthorSelects().then(() => { if (b.author) $('b-author').value = b.author.id; });
+  resetBookFileState(b.hasFb2 ? 'Текущий FB2-файл сохранён на сервере' : 'FB2-файл не загружен');
+  openM('m-book');
+}
+async function saveBook() {
+  const id = $('b-id').value;
+  const body = {
+    title: $('b-title').value, description: $('b-desc').value,
+    year: +$('b-year').value, pageCount: +$('b-pages').value,
+    authorId: +$('b-author').value
+  };
+  if (pendingFb2Content !== null) body.fb2Content = pendingFb2Content;
+  await api(id ? 'PUT' : 'POST', id ? `/books/${id}` : '/books', body).catch(() => null);
+  closeM('m-book'); loadBooks();
+  toast(id ? 'Книга обновлена' : 'Книга добавлена');
+}
+async function delBook(id) {
+  if (!confirm('Удалить книгу?')) return;
+  await api('DELETE', `/books/${id}`).catch(() => null);
+  loadBooks(); toast('Книга удалена');
+}
+
+/* ── READERS ── */
+async function loadReaders() {
+  const d = await api('GET', '/readers').catch(() => null);
+  const out = $('readers-out');
+  if (!d) { out.innerHTML = errHTML(); return; }
+  if (!d.length) { out.innerHTML = empty('ti-users', 'Читателей пока нет'); return; }
+  out.innerHTML = `<div class="card"><div class="table-wrap"><table>
+    <thead><tr>
+      <th style="width:56px">#</th>
+      <th>Имя</th><th>Фамилия</th><th>Email</th>
+      <th style="width:72px"></th>
+    </tr></thead>
+    <tbody>${d.map(r => `<tr>
+      <td class="td-id">${r.id}</td>
+      <td>${esc(r.firstName)}</td>
+      <td>${esc(r.lastName)}</td>
+      <td class="td-mono">${esc(r.email)}</td>
+      <td><div class="actions-cell">
+        <button class="btn btn-sm btn-ghost" aria-label="Редактировать" onclick='editReader(${JSON.stringify(r)})'>
+          <i class="ti ti-edit" aria-hidden="true"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" aria-label="Удалить" onclick="delReader(${r.id})">
+          <i class="ti ti-trash" aria-hidden="true"></i>
+        </button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;
+}
+function newReader() {
+  $('m-reader-title').textContent = 'Новый читатель';
+  ['r-id','r-fn','r-ln','r-email'].forEach(id => $(id).value = '');
+  openM('m-reader');
+}
+function editReader(r) {
+  $('m-reader-title').textContent = 'Редактировать';
+  $('r-id').value = r.id; $('r-fn').value = r.firstName;
+  $('r-ln').value = r.lastName; $('r-email').value = r.email;
+  openM('m-reader');
+}
+async function saveReader() {
+  const id = $('r-id').value;
+  const body = { firstName: $('r-fn').value, lastName: $('r-ln').value, email: $('r-email').value };
+  await api(id ? 'PUT' : 'POST', id ? `/readers/${id}` : '/readers', body).catch(() => null);
+  closeM('m-reader'); loadReaders();
+  toast(id ? 'Данные обновлены' : 'Читатель зарегистрирован');
+}
+async function delReader(id) {
+  if (!confirm('Удалить читателя?')) return;
+  await api('DELETE', `/readers/${id}`).catch(() => null);
+  loadReaders(); toast('Читатель удалён');
+}
+
+/* ── LOANS ── */
+async function populateLoanSelects() {
+  const [readers, books] = await Promise.all([
+    api('GET', '/readers').catch(() => []),
+    api('GET', '/books').catch(() => [])
+  ]);
+  const rRows = (readers || []).map(r => `<option value="${r.id}">${esc(r.lastName)} ${esc(r.firstName)}</option>`).join('');
+  $('f-reader-loan').innerHTML = '<option value="">Все читатели</option>' + rRows;
+  $('l-reader').innerHTML = '<option value="">Читатель</option>' + rRows;
+  $('l-book').innerHTML = '<option value="">Книга</option>' +
+    (books || []).map(b => `<option value="${b.id}">${esc(b.title)}</option>`).join('');
+}
+async function loadLoans() {
+  let path = '/loans?';
+  const r = $('f-reader-loan').value;
+  if (r) path += `readerId=${r}&`;
+  const d = await api('GET', path).catch(() => null);
+  const out = $('loans-out');
+  if (!d) { out.innerHTML = errHTML(); return; }
+  if (!d.length) { out.innerHTML = empty('ti-arrows-exchange', 'Владений не найдено'); return; }
+  out.innerHTML = `<div class="card"><div class="table-wrap"><table>
+    <thead><tr>
+      <th style="width:56px">#</th>
+      <th>Книга</th><th>Владелец</th>
+      <th style="width:90px">Дата</th>
+      <th style="width:84px">Статус</th>
+    </tr></thead>
+    <tbody>${d.map(l => `<tr>
+      <td class="td-id">${l.id}</td>
+      <td>${l.bookTitle ? l.bookTitle : '—'}</td>
+      <td class="td-sub">${l.readerName ? l.readerName : '—'}</td>
+      <td class="td-id">${fmtDate(l.loanDate)}</td>
+      <td><span class="pill pill-green">владение</span></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;
+}
+async function createLoan() {
+  await api('POST', '/loans', { bookId: +$('l-book').value, readerId: +$('l-reader').value }).catch(() => null);
+  closeM('m-loan'); loadLoans(); toast('Владение оформлено');
+}
+
+/* ── PROGRESS ── */
+async function populateProgressSelects() {
+  const [readers, books] = await Promise.all([
+    api('GET', '/readers').catch(() => []),
+    api('GET', '/books').catch(() => [])
+  ]);
+  const rRows = (readers || []).map(r => `<option value="${r.id}">${esc(r.lastName)} ${esc(r.firstName)}</option>`).join('');
+  $('f-reader-prog').innerHTML = '<option value="">Выберите читателя</option>' + rRows;
+  $('p-reader').innerHTML = '<option value="">Читатель</option>' + rRows;
+  $('p-book').innerHTML = '<option value="">Книга</option>' +
+    (books || []).map(b => `<option value="${b.id}">${esc(b.title)}</option>`).join('');
+}
+async function loadProgress() {
+  const rid = $('f-reader-prog').value;
+  const out = $('progress-out');
+  if (!rid) { out.innerHTML = empty('ti-bookmark', 'Выберите читателя для просмотра закладок'); return; }
+  const d = await api('GET', `/readers/${rid}/progress`).catch(() => null);
+  if (!d) { out.innerHTML = errHTML(); return; }
+  if (!d.length) { out.innerHTML = empty('ti-bookmark', 'У читателя нет закладок'); return; }
+  out.innerHTML = `<div class="card"><div class="table-wrap"><table>
+    <thead><tr>
+      <th>Книга</th>
+      <th style="width:140px">Страница</th>
+      <th style="width:110px">Обновлено</th>
+      <th style="width:52px"></th>
+    </tr></thead>
+    <tbody>${d.map(p => `<tr>
+      <td>${p.bookTitle ? p.bookTitle : '—'}</td>
+      <td class="td-mono">${p.currentPage}${p.book?.pageCount ? ' / ' + p.book.pageCount : ''}</td>
+      <td class="td-id">${fmtDate(p.updatedAt)}</td>
+      <td><button class="btn btn-sm btn-danger" aria-label="Удалить закладку"
+          onclick="delProgress(${rid}, ${p.book?.id || p.bookId})">
+        <i class="ti ti-trash" aria-hidden="true"></i>
+      </button></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;
+}
+async function saveProgress() {
+  const rid = $('p-reader').value, bid = $('p-book').value;
+  await api('PUT', `/readers/${rid}/progress/${bid}`, { currentPage: +$('p-page').value }).catch(() => null);
+  closeM('m-prog'); loadProgress(); toast('Закладка сохранена');
+}
+async function delProgress(rid, bid) {
+  if (!confirm('Удалить закладку?')) return;
+  await api('DELETE', `/readers/${rid}/progress/${bid}`).catch(() => null);
+  loadProgress(); toast('Закладка удалена');
+}
+
+loadAuthors();
+</script>
+</body>
+</html>
